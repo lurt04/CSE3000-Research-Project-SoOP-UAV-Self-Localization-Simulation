@@ -1,0 +1,9 @@
+function ekf = create_ekf_tdoa_urban(env, cfg, initial_position)
+state0 = [initial_position; 0; 0; 0];
+ekf = extendedKalmanFilter( ...
+    @(x) stateFcn(cfg, x), ...
+    @(x, ref_idx) measFcn_tdoa(x, env.tx, cfg.c, ref_idx), ...
+    state0);
+ekf.ProcessNoise = diag([5, 5, 0.5, 1, 1, 0.1]);
+ekf.MeasurementNoise = eye(env.N_tx - 1) * env.nlos_spread_s^2; 
+end
